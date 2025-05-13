@@ -2,7 +2,6 @@ import 'package:bilgi_testi/constants.dart';
 import 'package:bilgi_testi/test_veri.dart';
 import 'package:flutter/material.dart';
 
-
 void main() => runApp(BilgiTesti());
 
 class BilgiTesti extends StatelessWidget {
@@ -31,6 +30,39 @@ class _SoruSayfasiState extends State<SoruSayfasi> {
   List<Widget> secimler = [];
 
   TestVeri test_1 = TestVeri();
+
+  void butonFonksiyonu(bool secilenButon) {
+    if (test_1.testBittiMi() == true) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: new Text("Bravo Testi Bitirdiniz"),
+            actions: [
+              new TextButton(
+                child: new Text("Başa Dön"),
+                onPressed: () {
+                  setState(() {
+                    test_1.testiSifirla();
+                    secimler = [];
+                  });
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      setState(() {
+        test_1.getSoruYaniti() == secilenButon
+            ? secimler.add(kDogruIconu)
+            : secimler.add(kYanlisIconu);
+
+        test_1.sonrakiSoru();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,13 +109,7 @@ class _SoruSayfasiState extends State<SoruSayfasi> {
                         color: Colors.white,
                       ),
                       onPressed: () {
-                        setState(() {
-                          test_1.getSoruYaniti() == false
-                              ? secimler.add(kDogruIconu)
-                              : secimler.add(kYanlisIconu);
-
-                          test_1.sonrakiSoru();
-                        });
+                        butonFonksiyonu(false);
                       },
                     ),
                   ),
@@ -102,12 +128,7 @@ class _SoruSayfasiState extends State<SoruSayfasi> {
                         color: Colors.white,
                       ),
                       onPressed: () {
-                        setState(() {
-                          test_1.getSoruYaniti() == true
-                              ? secimler.add(kDogruIconu)
-                              : secimler.add(kYanlisIconu);
-                          test_1.sonrakiSoru();
-                        });
+                        butonFonksiyonu(true);
                       },
                     ),
                   ),
