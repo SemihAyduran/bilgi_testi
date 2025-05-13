@@ -1,6 +1,5 @@
 import 'package:bilgi_testi/soru.dart';
 
-
 class TestVeri {
   int _soruIndex = 0;
 
@@ -38,6 +37,16 @@ class TestVeri {
       _soruIndex++;
     }
   }
+
+  bool testBittiMi() {
+    if (_soruIndex + 1 >= _soruBankasi.length) {
+      return true;
+    } else {return false;
+    }
+  }
+
+void testiSifirla(){
+  _soruIndex=0;
 }
 
-
+}
