@@ -1,5 +1,7 @@
 import 'package:bilgi_testi/constants.dart';
+import 'package:bilgi_testi/test_veri.dart';
 import 'package:flutter/material.dart';
+
 
 void main() => runApp(BilgiTesti());
 
@@ -8,7 +10,7 @@ class BilgiTesti extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        backgroundColor: Colors.indigo[700],
+        backgroundColor: Colors.grey[700],
         body: SafeArea(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 10.0),
@@ -28,33 +30,7 @@ class SoruSayfasi extends StatefulWidget {
 class _SoruSayfasiState extends State<SoruSayfasi> {
   List<Widget> secimler = [];
 
-  List<Soru> soruBankasi = [
-    Soru(
-      soruMetni: '1.Titanic gelmiş geçmiş en büyük gemidir',
-      soruYaniti: false,
-    ),
-    Soru(
-      soruMetni: '2.Dünyadaki tavuk sayısı insan sayısından fazladır',
-      soruYaniti: true,
-    ),
-    Soru(soruMetni: '3.Kelebeklerin ömrü bir gündür', soruYaniti: false),
-    Soru(soruMetni: '4.Dünya düzdür', soruYaniti: false),
-    Soru(
-      soruMetni: '5.Kaju fıstığı aslında bir meyvenin sapıdır',
-      soruYaniti: true,
-    ),
-    Soru(
-      soruMetni: '6.Fatih Sultan Mehmet hiç patates yememiştir',
-      soruYaniti: true,
-    ),
-  ];
-
-  Soru soru_1 = Soru(
-    soruMetni: '1.Titanic gelmiş geçmiş en büyük gemidir',
-    soruYaniti: false,
-  );
-
-  int soruIndex = 0;
+  TestVeri test_1 = TestVeri();
 
   @override
   Widget build(BuildContext context) {
@@ -68,9 +44,14 @@ class _SoruSayfasiState extends State<SoruSayfasi> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                soruBankasi[soruIndex].soruMetni,
+                test_1.getSoruMetni(),
+                // test_1.soruBankasi[soruIndex].soruMetni, // test_1 adlı objenin içindeki soruBankasi adlı listenin soruIndexinci (0,1,2....) değerine ulaş, onunda soruMetni adlı değişkenini bana getir.
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 20.0, color: Colors.white),
+                style: TextStyle(
+                  fontSize: 20.0,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
@@ -97,10 +78,11 @@ class _SoruSayfasiState extends State<SoruSayfasi> {
                       ),
                       onPressed: () {
                         setState(() {
-                          soruBankasi[soruIndex].soruYaniti == false
+                          test_1.getSoruYaniti() == false
                               ? secimler.add(kDogruIconu)
                               : secimler.add(kYanlisIconu);
-                          soruIndex++;
+
+                          test_1.sonrakiSoru();
                         });
                       },
                     ),
@@ -121,10 +103,10 @@ class _SoruSayfasiState extends State<SoruSayfasi> {
                       ),
                       onPressed: () {
                         setState(() {
-                          soruBankasi[soruIndex].soruYaniti == true
+                          test_1.getSoruYaniti() == true
                               ? secimler.add(kDogruIconu)
                               : secimler.add(kYanlisIconu);
-                          soruIndex++;
+                          test_1.sonrakiSoru();
                         });
                       },
                     ),
@@ -137,11 +119,4 @@ class _SoruSayfasiState extends State<SoruSayfasi> {
       ],
     );
   }
-}
-
-class Soru {
-  String soruMetni;
-  bool soruYaniti;
-
-  Soru({required this.soruMetni, required this.soruYaniti});
 }
