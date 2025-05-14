@@ -1,6 +1,7 @@
 import 'package:bilgi_testi/constants.dart';
 import 'package:bilgi_testi/test_veri.dart';
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 void main() => runApp(BilgiTesti());
 
@@ -28,19 +29,29 @@ class SoruSayfasi extends StatefulWidget {
 
 class _SoruSayfasiState extends State<SoruSayfasi> {
   List<Widget> secimler = [];
-
   TestVeri test_1 = TestVeri();
 
+  final AudioPlayer oynatici = AudioPlayer();
+
+  // Yeni API'ye uygun ses çalma fonksiyonu
+  void playSound(String filePath) {
+    oynatici.play(AssetSource(filePath));
+  }
+
+  bool checkAnswer(bool secilenButon) {
+    return test_1.getSoruYaniti() == secilenButon;
+  }
+
   void butonFonksiyonu(bool secilenButon) {
-    if (test_1.testBittiMi() == true) {
+    if (test_1.testBittiMi()) {
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: new Text("Bravo Testi Bitirdiniz"),
+            title: Text("Bravo Testi Bitirdiniz"),
             actions: [
-              new TextButton(
-                child: new Text("Başa Dön"),
+              TextButton(
+                child: Text("Başa Dön"),
                 onPressed: () {
                   setState(() {
                     test_1.testiSifirla();
@@ -55,9 +66,12 @@ class _SoruSayfasiState extends State<SoruSayfasi> {
       );
     } else {
       setState(() {
-        test_1.getSoruYaniti() == secilenButon
+        checkAnswer(secilenButon)
             ? secimler.add(kDogruIconu)
             : secimler.add(kYanlisIconu);
+        checkAnswer(secilenButon)
+            ? playSound('sounds/true.wav')
+            : playSound('sounds/false.mp3');
 
         test_1.sonrakiSoru();
       });
@@ -77,7 +91,6 @@ class _SoruSayfasiState extends State<SoruSayfasi> {
             child: Center(
               child: Text(
                 test_1.getSoruMetni(),
-                // test_1.soruBankasi[soruIndex].soruMetni, // test_1 adlı objenin içindeki soruBankasi adlı listenin soruIndexinci (0,1,2....) değerine ulaş, onunda soruMetni adlı değişkenini bana getir.
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 20.0,
