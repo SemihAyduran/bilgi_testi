@@ -1,13 +1,13 @@
 import 'package:bilgi_testi/constants.dart';
-import 'package:bilgi_testi/test_veri.dart';
+import 'package:bilgi_testi/test_information.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:confetti/confetti.dart';
 
 
-void main() => runApp(BilgiTesti());
+void main() => runApp(QuestionAnswer());
 
-class BilgiTesti extends StatelessWidget {
+class QuestionAnswer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -16,7 +16,7 @@ class BilgiTesti extends StatelessWidget {
         body: SafeArea(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 10.0),
-            child: SoruSayfasi(),
+            child: QuestionPage(),
           ),
         ),
       ),
@@ -24,29 +24,29 @@ class BilgiTesti extends StatelessWidget {
   }
 }
 
-class SoruSayfasi extends StatefulWidget {
+class QuestionPage extends StatefulWidget {
 
 late ConfettiController _confettiController;
 
 
 
   @override
-  _SoruSayfasiState createState() => _SoruSayfasiState();
+  _QuestionPageState createState() => _QuestionPageState();
 }
 
 
 
-class _SoruSayfasiState extends State<SoruSayfasi> {
-  List<Widget> secimler = [];
+class _QuestionPageState extends State<QuestionPage> {
+  List<Widget> chosen = [];
   TestVeri test_1 = TestVeri();
-  final AudioPlayer oynatici = AudioPlayer();
+  final AudioPlayer player = AudioPlayer();
 
   late ConfettiController _confettiController;
 
   @override
   void initState() {
     super.initState();
-    _confettiController = ConfettiController(duration: const Duration(seconds: 5));
+    _confettiController = ConfettiController(duration: const Duration(seconds: 20));
   }
 
   @override
@@ -56,15 +56,15 @@ class _SoruSayfasiState extends State<SoruSayfasi> {
   }
 
   void playSound(String filePath) {
-    oynatici.play(AssetSource(filePath));
+    player.play(AssetSource(filePath));
   }
 
-  bool checkAnswer(bool secilenButon) {
-    return test_1.getSoruYaniti() == secilenButon;
+  bool checkAnswer(bool selectedButton) {
+    return test_1.getAnswer() == selectedButton;
   }
 
-  void butonFonksiyonu(bool secilenButon) {
-    if (test_1.testBittiMi()) {
+  void buttonFunction(bool selectedButton) {
+    if (test_1.isTestOver()) {
       // Konfeti animasyonunu başlat
       _confettiController.play();
 
@@ -80,8 +80,8 @@ class _SoruSayfasiState extends State<SoruSayfasi> {
                 onPressed: () {
                   setState(() {
                     _confettiController.stop();
-                    test_1.testiSifirla();
-                    secimler = [];
+                    test_1.resetTest();
+                    chosen = [];
                   });
                   Navigator.of(context).pop();
                 },
@@ -93,13 +93,13 @@ class _SoruSayfasiState extends State<SoruSayfasi> {
       
     } else {
       setState(() {
-        checkAnswer(secilenButon)
-            ? secimler.add(kDogruIconu)
-            : secimler.add(kYanlisIconu);
-        checkAnswer(secilenButon)
+        checkAnswer(selectedButton)
+            ? chosen.add(kTrueIcon)
+            : chosen.add(kFalseIcon);
+        checkAnswer(selectedButton)
             ? playSound('sounds/true.wav')
             : playSound('sounds/false.mp3');
-        test_1.sonrakiSoru();
+        test_1.nextQuestion();
       });
     }
   }
@@ -118,7 +118,7 @@ class _SoruSayfasiState extends State<SoruSayfasi> {
                 padding: EdgeInsets.all(10.0),
                 child: Center(
                   child: Text(
-                    test_1.getSoruMetni(),
+                    test_1.getQuestion(),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 20.0,
@@ -129,7 +129,7 @@ class _SoruSayfasiState extends State<SoruSayfasi> {
                 ),
               ),
             ),
-            Wrap(runSpacing: 5, spacing: 5, children: secimler),
+            Wrap(runSpacing: 5, spacing: 5, children: chosen),
             Expanded(
               flex: 1,
               child: Padding(
@@ -150,7 +150,7 @@ class _SoruSayfasiState extends State<SoruSayfasi> {
                             color: Colors.white,
                           ),
                           onPressed: () {
-                            butonFonksiyonu(false);
+                            buttonFunction(false);
                           },
                         ),
                       ),
@@ -169,7 +169,7 @@ class _SoruSayfasiState extends State<SoruSayfasi> {
                             color: Colors.white,
                           ),
                           onPressed: () {
-                            butonFonksiyonu(true);
+                            buttonFunction(true);
                           },
                         ),
                       ),
@@ -180,7 +180,6 @@ class _SoruSayfasiState extends State<SoruSayfasi> {
             ),
           ],
         ),
-        // Konfeti animasyonu widget'ı
         Align(
           alignment: Alignment.center,
           child: ConfettiWidget(
